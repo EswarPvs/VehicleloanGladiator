@@ -1,0 +1,147 @@
+drop table register cascade constraints;  
+drop table application cascade constraints;
+drop table car_details cascade constraints;
+drop table loan_details cascade constraints;
+drop table emi_schedule cascade constraints;
+drop table admin cascade constraints;
+drop table identity cascade constraints;
+
+create table register
+	  (
+	     Customer_Id number       primary key,
+	     Email       varchar2(20) ,
+	     Password    varchar2(20) not null,
+	     First_Name	 varchar2(20),
+	     Middle_Name	 varchar2(20),
+	     Last_Name       varchar2(20),
+	     Gender      varchar2(20),
+	     DOB	 date,
+	     State	 varchar2(20),
+	     Pincode	 number,
+	     City	 varchar2(20),
+	     Mobile	 varchar2(20) ,
+	     Alter_Mobile varchar2(20) ,
+	     Pan	 varchar2(20) 
+	  );
+
+insert into register values (101,'sai@gmail.com','123456','sai','kiran','prabhas','m','12-Jun-1995','AP',561546,'vizag','6288451164','9851946193','VVE255N');
+
+insert into register values (102,'nivin@gmail.com','123789','nivin','tom','chacko','m','18-Sep-1997','AP',561558,'vizag','6766941164','9869976554','BOP542B');
+			
+insert into register values (103,'eswar@gmail.com','456789','venkata','eswar','pudipeddi','m','26-Oct-1997','KL',408708,'allepy','7852667944','9525433226','WEN985M');
+
+
+
+
+create table application
+	(
+	   Application_Id  number  primary key,
+	   Customer_Id number  not null,
+	   address varchar2(20),
+	   licence varchar2(20) ,
+	   aadhaar varchar2(20) ,
+           Account_No   number ,
+	   branch  varchar2(10),
+	   ifsc    varchar2(10),
+	   Account_type varchar2(10),
+	   occupation varchar2(20),
+	   annual_Income  number,
+	   existing_Emi number,
+	   constraint application_foreign_key foreign key (Customer_Id ) references register (Customer_Id )
+	 );
+
+insert into application values (201,101,'545_MG-road','AP5462682198','218782168842',41526,'gurudwar','AX46662','savings','consultant',780000,0);   
+
+insert into application values (202,102,'102_Nehru-street','AP5462684462','349776885968',79538,'panjagutta','AX24632','savings','manager',950000,5000);
+
+insert into application values (203,103,'D145_adyar-street','KL4622689942','475278216846',76651,'allepy','AX44789','savings','engineer',820000,0);
+                        
+
+
+
+create table car_details
+	(
+	  Vehicle_Id    number primary key,
+	  company_Name  varchar2(10),
+	  model    varchar2(10),
+	  category varchar2(10),
+	  color    varchar2(10),
+	  variant  varchar2(10),
+          ex_price  number
+	);
+
+insert into car_details values (1,'Maruthi','Dezire','standard','blue','VDI',725000);
+
+insert into car_details values (2,'Hundai','Creta','premium','white','SX',1725000);
+
+insert into car_details values (3,'KIA','sofet','standard','red','HTX',1050000);
+
+
+
+
+create table loan_details
+	(
+	   Loan_Id number primary key,
+	   Vehicle_Id  number not null,
+	   Application_Id number unique not null,
+	   Req_Amount number,
+	   tenure number,
+	   roi    number(10,2),
+	   status varchar2(10),
+	   constraint loanDetails_foreign_key foreign key (Application_Id) references application (Application_Id),
+	   constraint loanDetail_foreign_key foreign key (Vehicle_Id) references car_details (Vehicle_Id)
+	);
+
+insert into loan_details values (1001,1,201,700000,84,8,'approved');
+
+insert into loan_details values (1002,2,202,1500000,84,7.5,'approved');
+
+insert into loan_details values (1003,3,203,900000,84,8,'approved');
+
+
+create table emi_schedule
+	(
+	  Loan_Id    number primary key,
+	  Loan_Sanctioned   number,
+	  Applied_Date  date,			/* LocalDate.now()  */
+	  Sanctioned_Date  date,   		/* LocalDate.now()  */
+	  emi       number,
+	  EMI_Scheduler    number,		/* LocalDate.of(Sanctioned_date).plusMonth(1)  */
+	  Total_Loan number,
+	  constraint emiSched_foreign_key foreign key (Loan_Id) references loan_details (Loan_Id)
+	);
+
+insert into emi_schedule values (1001,685000,'12-Mar-2020','16-Mar-2020',10540,5,685000);
+
+insert into emi_schedule values (1002,1455000,'14-Apr-2020','18-Apr-2020',18840,5,1455000);
+
+insert into emi_schedule values (1003,885000,'21-Mar-2020','25-Mar-2020',12540,5,885000);
+
+
+
+
+
+create table admin
+	(
+	 admin_Id number primary key,
+	 admin_Email varchar2(20),
+	 admin_Pass  varchar2(10)
+	);
+
+insert into admin values (501,'admin1@gmail.com','abc123');
+insert into admin values (502,'admin2@gmail.com','abc789');
+
+
+
+
+create table identity
+	(
+	 Application_Id number primary key,
+	 adhaar_Doc varchar2(20) ,
+	 pan_Doc varchar2(10) ,
+	 salary_Slip varchar2(10),
+	 account_Stat varchar2(10),
+	 constraint identity_foreign_key foreign key (Application_Id) references application (Application_Id) 
+	);
+
+commit;
